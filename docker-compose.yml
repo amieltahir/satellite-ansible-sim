@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  nexus:
+    image: sonatype/nexus3:latest
+    container_name: sim-nexus
+    ports:
+      - "8086:8081"
+    volumes:
+      - nexus-data:/nexus-data
+    networks:
+      sim-net:
+        ipv4_address: 172.30.0.2
+
+  satellite-mirror:
+    image: nginx:alpine
+    container_name: sim-satellite-capsule
+    ports:
+      - "8085:80"
+    volumes:
+      - ./satellite-mirror/repos:/usr/share/nginx/html/repos:ro
+      - ./satellite-mirror/keys:/usr/share/nginx/html/keys:ro
+      - ./satellite-mirror/api/v2:/usr/share/nginx/html/v2:ro
+      - ./satellite-mirror/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      sim-net:
+        ipv4_address: 172.30.0.3
+
+  target-client:
+    image: rockylinux/rockylinux:9
+    container_name: sim-target-client
+    privileged: true
+    command: sleep infinity
+    networks:
+      sim-net:
+        ipv4_address: 172.30.0.4
+
+networks:
+  sim-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+volumes:
+  nexus-data:

@@ -1,0 +1,13 @@
+---
+# In local simulation, this points to your Nginx mock capsule/API container
+satellite_server_url: "http://localhost:8085"
+satellite_api_user: "mock_user"
+satellite_api_password: "mock_password"
+validate_certs: false
+
+target_organization_id: 1
+target_repo_labels:
+  - "gts-automation-rpm-release"
+
+packages_to_install:
+  - otel-collector

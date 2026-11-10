@@ -1,0 +1,6 @@
+---
+- name: Scenario 1 - GTS Package Deployment via Ansible
+  hosts: australia_onprem
+  gather_facts: true
+  roles:
+    - role: gts_package_installer

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm">
+  <package type="rpm">
+    <name>test-pkg</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="1.0" rel="1.el9"/>
+    <checksum type="sha256">15d41aabfa1af090a998f883f815d15e7cfb7b14db923c1f29058b68e6a1a9ed</checksum>
+    <location href="test-pkg-1.0-1.el9.x86_64.rpm"/>
+    <size package="6093"/>
+  </package>
+</metadata>

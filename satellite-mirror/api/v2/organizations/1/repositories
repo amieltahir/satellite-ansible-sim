@@ -1,0 +1,18 @@
+{
+  "results": [
+    {
+      "id": 101,
+      "label": "gts-automation-rpm-release",
+      "name": "GTS Automation RPM Release Repo",
+      "url": "http://172.20.0.3/repos/release/",
+      "content_credential_url": "http://172.20.0.3/keys/RPM-GPG-KEY-gts-automation"
+    },
+    {
+      "id": 102,
+      "label": "gts-automation-rpm-sandbox",
+      "name": "GTS Automation RPM Sandbox Repo",
+      "url": "http://172.20.0.3/repos/sandbox/",
+      "content_credential_url": "http://172.20.0.3/keys/RPM-GPG-KEY-gts-automation"
+    }
+  ]
+}
