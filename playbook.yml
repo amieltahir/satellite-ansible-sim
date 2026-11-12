@@ -1,6 +1,6 @@
 ---
-- name: Scenario 1 - GTS Package Deployment via Ansible
-  hosts: australia_onprem
+- name: Scenario 1 - TRS Package Deployment via Ansible
+  hosts: onprem
   gather_facts: true
   roles:
-    - role: gts_package_installer
+    - role: trs_package_installer

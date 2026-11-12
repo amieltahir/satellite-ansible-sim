@@ -7,7 +7,7 @@ validate_certs: false
 
 target_organization_id: 1
 target_repo_labels:
-  - "gts-automation-rpm-release"
+  - "trs-automation-rpm-release"
 
 packages_to_install:
   - otel-collector

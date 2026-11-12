@@ -2,17 +2,17 @@
   "results": [
     {
       "id": 101,
-      "label": "gts-automation-rpm-release",
-      "name": "GTS Automation RPM Release Repo",
+      "label": "trs-automation-rpm-release",
+      "name": "TRS Automation RPM Release Repo",
       "url": "http://172.20.0.3/repos/release/",
-      "content_credential_url": "http://172.20.0.3/keys/RPM-GPG-KEY-gts-automation"
+      "content_credential_url": "http://172.20.0.3/keys/RPM-GPG-KEY-trs-automation"
     },
     {
       "id": 102,
-      "label": "gts-automation-rpm-sandbox",
-      "name": "GTS Automation RPM Sandbox Repo",
+      "label": "trs-automation-rpm-sandbox",
+      "name": "TRS Automation RPM Sandbox Repo",
       "url": "http://172.20.0.3/repos/sandbox/",
-      "content_credential_url": "http://172.20.0.3/keys/RPM-GPG-KEY-gts-automation"
+      "content_credential_url": "http://172.20.0.3/keys/RPM-GPG-KEY-trs-automation"
     }
   ]
 }
