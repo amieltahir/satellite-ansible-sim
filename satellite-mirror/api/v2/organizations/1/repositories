@@ -4,15 +4,7 @@
       "id": 101,
       "label": "trs-automation-rpm-release",
       "name": "TRS Automation RPM Release Repo",
-      "url": "http://172.20.0.3/repos/release/",
-      "content_credential_url": "http://172.20.0.3/keys/RPM-GPG-KEY-trs-automation"
-    },
-    {
-      "id": 102,
-      "label": "trs-automation-rpm-sandbox",
-      "name": "TRS Automation RPM Sandbox Repo",
-      "url": "http://172.20.0.3/repos/sandbox/",
-      "content_credential_url": "http://172.20.0.3/keys/RPM-GPG-KEY-trs-automation"
+      "url": "http://nexus:8081/repository/trs-automation-rpm-release/"
     }
   ]
 }

@@ -1,61 +1,40 @@
 ---
-- name: Phase 1 - Discover Repository Metadata from Satellite API by Label
-  ansible.builtin.uri:
-    url: "http://localhost:8085/api/v2/organizations/1/repositories"
-    method: GET
-    user: "mock_user"
-    password: "mock_password"
-    force_basic_auth: true
-    validate_certs: no
-    return_content: true
-  register: satellite_repos_response
-  delegate_to: localhost
-  run_once: true
-
-- name: Parse and filter discovered repositories matching target labels
-  ansible.builtin.set_fact:
-    resolved_repositories: "{{ satellite_repos_response.json | selectattr('label', 'in', target_repo_labels) | list }}"
-  delegate_to: localhost
-  run_once: true
-
-- name: Fail if target repository labels were not found
+- name: Validate Nexus read credentials
   ansible.builtin.assert:
     that:
-      - resolved_repositories | length > 0
-    fail_msg: "No matching repositories found for labels: {{ target_repo_labels }}"
-  delegate_to: localhost
-  run_once: true
+      - nexus_read_username | length > 0
+      - nexus_read_password | length > 0
+    fail_msg: "Set NEXUS_READ_USER and NEXUS_READ_PASSWORD."
 
-- name: Phase 2 - Import GPG Keys from Satellite Content Credentials
-  ansible.builtin.rpm_key:
-    state: present
-    key: "{{ item.content_credential_url }}"
-  loop: "{{ resolved_repositories }}"
-
-- name: Phase 3 - Configure and Enable Discovered Repositories on Target Host
+- name: Configure Nexus RPM repository
   ansible.builtin.yum_repository:
     name: "{{ item.label }}"
     description: "{{ item.name }}"
     baseurl: "{{ item.url }}"
-    gpgcheck: no
-##    gpgkey: "{{ item.content_credential_url }}"
     enabled: true
+    gpgcheck: false
+    username: "{{ nexus_read_username }}"
+    password: "{{ nexus_read_password }}"
     state: present
-  loop: "{{ resolved_repositories }}"
+  loop: "{{ hostvars['localhost']['resolved_repositories'] }}"
 
-- name: Phase 4 - Install Target RPM Packages
+- name: Install packages from Nexus
   ansible.builtin.dnf:
-    name: "test-pkg"
+    name: "{{ packages_to_install }}"
     state: present
     update_cache: true
-  delegate_to: sim-target-client
 
-- name: Verify package installation
-  ansible.builtin.command: "rpm -qi test-pkg"
-  register: pkg_check
-##  loop: "{{ packages_to_install }}"
+- name: Verify installed RPM version
+  ansible.builtin.command:
+    argv:
+      - rpm
+      - -q
+      - --qf
+      - "%{NAME} %{VERSION}-%{RELEASE}.%{ARCH}\n"
+      - test-pkg
+  register: package_verification
   changed_when: false
 
-- name: Show package verification info
+- name: Display installed package
   ansible.builtin.debug:
-    msg: "{{ pkg_check.stdout }}"
+    msg: "{{ package_verification.stdout }}"

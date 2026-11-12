@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nexus:
-    image: sonatype/nexus3:latest
+    image: sonatype/nexus3:3.98.1-01
     container_name: sim-nexus
     ports:
       - "8086:8081"

@@ -1,6 +1,118 @@
 ---
-- name: Scenario 1 - TRS Package Deployment via Ansible
-  hosts: onprem
+- name: Publish RPM to Nexus
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Validate required Nexus publisher credentials
+      ansible.builtin.assert:
+        that:
+          - nexus_publisher_username | length > 0
+          - nexus_publisher_password | length > 0
+        fail_msg: "Set NEXUS_PUBLISHER_USER and NEXUS_PUBLISHER_PASSWORD."
+
+    - name: Validate local RPM artifact
+      ansible.builtin.stat:
+        path: "{{ nexus_rpm_path }}"
+      register: local_rpm
+
+    - name: Fail if local RPM is missing
+      ansible.builtin.assert:
+        that:
+          - local_rpm.stat.exists
+          - local_rpm.stat.isreg
+          - local_rpm.stat.size | int > 0
+        fail_msg: "RPM artifact not found or empty: {{ nexus_rpm_path }}"
+
+    - name: Discover repositories from Satellite-style API
+      ansible.builtin.uri:
+        url: "{{ satellite_server_url }}/api/v2/organizations/{{ target_organization_id }}/repositories"
+        method: GET
+        user: "{{ satellite_api_user }}"
+        password: "{{ satellite_api_password }}"
+        force_basic_auth: true
+        return_content: true
+        status_code: 200
+      register: satellite_repos_response
+      changed_when: false
+
+    - name: Resolve the requested Nexus repository
+      ansible.builtin.set_fact:
+        resolved_repositories: >-
+          {{
+            satellite_repos_response.json.results
+            | selectattr('label', 'in', target_repo_labels)
+            | list
+          }}
+
+    - name: Validate repository discovery
+      ansible.builtin.assert:
+        that:
+          - resolved_repositories | length == 1
+          - resolved_repositories[0].url is defined
+        fail_msg: >-
+          Expected exactly one repository matching
+          {{ target_repo_labels }}.
+
+    - name: Check whether the RPM already exists in Nexus
+      ansible.builtin.uri:
+        url: "{{ nexus_publish_base_url }}/{{ nexus_repository_name }}/{{ nexus_artifact_name }}"
+        method: HEAD
+        user: "{{ nexus_publisher_username }}"
+        password: "{{ nexus_publisher_password }}"
+        force_basic_auth: true
+        status_code:
+          - 200
+          - 404
+      register: nexus_artifact_check
+      changed_when: false
+
+    - name: Publish RPM to Nexus when it does not exist
+      ansible.builtin.uri:
+        url: "{{ nexus_publish_base_url }}/{{ nexus_repository_name }}/{{ nexus_artifact_name }}"
+        method: PUT
+        src: "{{ nexus_rpm_path }}"
+        headers:
+          Content-Type: "application/x-rpm"
+        user: "{{ nexus_publisher_username }}"
+        password: "{{ nexus_publisher_password }}"
+        force_basic_auth: true
+        status_code:
+          - 200
+          - 201
+          - 204
+      when: nexus_artifact_check.status == 404
+      no_log: true
+
+
+    - name: Verify Nexus repository metadata is available
+      ansible.builtin.uri:
+        url: "{{ nexus_publish_base_url }}/{{ nexus_repository_name }}/repodata/repomd.xml"
+        method: GET
+        user: "{{ nexus_read_username }}"
+        password: "{{ nexus_read_password }}"
+        force_basic_auth: true
+        return_content: false
+        status_code: 200
+      register: nexus_metadata
+      until: nexus_metadata.status == 200
+      retries: 12
+      delay: 5
+      changed_when: false
+      no_log: true
+
+    - name: Show artifact publication result
+      ansible.builtin.debug:
+        msg:
+          - "Artifact: {{ nexus_artifact_name }}"
+          - "Nexus repository: {{ resolved_repositories[0].url }}"
+          - "Upload required: {{ nexus_artifact_check.status == 404 }}"
+          - "Repository metadata: HTTP {{ nexus_metadata.status }}"
+
+- name: Install RPM from Nexus on Rocky Linux
+  hosts: australia_onprem
   gather_facts: true
+
   roles:
     - role: trs_package_installer
