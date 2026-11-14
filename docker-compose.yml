@@ -1,8 +1,7 @@
-version: '3.8'
 
 services:
   nexus:
-    image: sonatype/nexus3:latest
+    image: sonatype/nexus3:3.98.1
     container_name: sim-nexus
     ports:
       - "8086:8081"
@@ -11,6 +10,7 @@ services:
     networks:
       sim-net:
         ipv4_address: 172.30.0.2
+    restart: unless-stopped
 
   satellite-mirror:
     image: nginx:alpine
@@ -25,6 +25,7 @@ services:
     networks:
       sim-net:
         ipv4_address: 172.30.0.3
+    restart: unless-stopped
 
   target-client:
     image: rockylinux/rockylinux:9
@@ -34,6 +35,7 @@ services:
     networks:
       sim-net:
         ipv4_address: 172.30.0.4
+    restart: unless-stopped
 
 networks:
   sim-net:
@@ -44,3 +46,4 @@ networks:
 
 volumes:
   nexus-data:
+

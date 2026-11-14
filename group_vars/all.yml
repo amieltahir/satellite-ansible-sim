@@ -1,0 +1,24 @@
+---
+satellite_server_url: "http://localhost:8085"
+satellite_api_user: "mock_user"
+satellite_api_password: "mock_password"
+target_organization_id: 1
+
+target_repo_labels:
+  - "trs-automation-rpm-release"
+
+nexus_repository_name: "trs-automation-rpm-release"
+nexus_publish_base_url: "http://localhost:8086/repository"
+nexus_internal_base_url: "http://nexus:8081/repository"
+
+nexus_publisher_username: "{{ lookup('env', 'NEXUS_PUBLISHER_USER') }}"
+nexus_publisher_password: "{{ lookup('env', 'NEXUS_PUBLISHER_PASSWORD') }}"
+
+nexus_read_username: "{{ lookup('env', 'NEXUS_READ_USER') }}"
+nexus_read_password: "{{ lookup('env', 'NEXUS_READ_PASSWORD') }}"
+
+nexus_artifact_name: "test-pkg-1.0-1.el9.x86_64.rpm"
+nexus_rpm_path: "{{ playbook_dir }}/satellite-mirror/repos/release/{{ nexus_artifact_name }}"
+
+packages_to_install:
+  - test-pkg
