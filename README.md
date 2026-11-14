@@ -1,4 +1,4 @@
-# GTS Custom RPM Deployment & Simulation Framework
+# TRS Custom RPM Deployment & Simulation Framework
 
 This repository provides a fully automated local simulation environment for deploying custom RPM packages to a RHEL/Rocky Linux client container using **Ansible** and a mock **Nginx-based repository mirror**.
 
