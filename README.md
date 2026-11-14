@@ -15,28 +15,31 @@ This repository provides a fully automated local simulation environment for depl
 ## Project Directory Structure
 
 ```text
-.
+satellite-ansible-sim/
+├── ansible.cfg
 ├── docker-compose.yml
 ├── inventory.ini
 ├── playbook.yml
-├── roles
-│   └── gts_package_installer
-│       ├── defaults
+├── group_vars/
+│   └── all/
+│       ├── main.yml
+│       └── vault.yml
+├── rpm/
+│   ├── SOURCES/
+│   │   └── trs-node-audit
+│   └── SPECS/
+│       └── trs-ops-toolkit.spec
+├── roles/
+│   └── trs_package_installer/
+│       ├── defaults/
 │       │   └── main.yml
-│       └── tasks
-│           └── main.yml
-└── satellite-mirror
-    ├── api
-    │   └── v2
-    │       └── organizations
-    ├── keys
-    │   └── RPM-GPG-KEY-gts-automation
+│       ├── tasks/
+│       │   └── main.yml
+│       └── templates/
+│           └── nexus.repo.j2
+└── satellite-mirror/
+    ├── api/
+    ├── keys/
     ├── nginx.conf
-    └── repos
-        └── release
-            ├── repodata
-            │   ├── primary.xml
-            │   ├── primary.xml.gz
-            │   └── repomd.xml
-            └── test-pkg-1.0-1.el9.x86_64.rpm
+    └── repos/
 =======
